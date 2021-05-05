@@ -1,13 +1,7 @@
-# An algorithm that finds the intersections in 2 discrete (long and short) moving averages.
-# Ruby on Rails, ActiveRecord model data, and Statistical Analysis of Momentum.
+# An algorithm that finds the intersections in 2 discrete (long and short) moving averages. Incorporating Ruby on Rails / ActiveRecord model data for Statistical Analysis of Momentum.
 ------
-## Finds the golden cross and death crossings for a slow and fast moving average
-## by comparing a 3-day sliding window (on a discrete set) for the intersection.
-## In this example, the data is coming from Tenkan and Kijun data in an Ichimoku study
-## on stock market data.
-
+Finds the golden cross and death crossings for a slow and fast moving average by comparing a 3-day sliding window (on a discrete set) for the intersection. In this example, the data is coming from Tenkan and Kijun data in an Ichimoku study on stock market data.
 ### matt.a.feenstra@gmail.com - copyright 2021
-
 ------
 ![Ichimoku Chart](brk.a-ichimoku.png)
 ------
