@@ -48,10 +48,10 @@ short_averages.each.with_index(1) do |short, i|
     # significant figures are important because we're looking at the delta for the long and short average plots
     found_sigfigs = false
     dollar_magnitude = short_averages[i].round.to_s.size
-    ((dollar_magnitude <= 1) && !found_sigfigs) ? (round_digits = 4; found_sigfigs = true) : 
-    ((dollar_magnitude == 2) && !found_sigfigs) ? (round_digits = 3; found_sigfigs = true) :
-    ((dollar_magnitude == 3) && !found_sigfigs) ? (round_digits = 2; found_sigfigs = true) :
-    ((dollar_magnitude == 4) && !found_sigfigs) ? (round_digits = 1; found_sigfigs = true) :
+    if (dollar_magnitude <= 1) && !found_sigfigs then round_digits = 4; found_sigfigs = true end
+    if (dollar_magnitude == 2) && !found_sigfigs then round_digits = 3; found_sigfigs = true end
+    if (dollar_magnitude == 3) && !found_sigfigs then round_digits = 2; found_sigfigs = true end
+    if (dollar_magnitude == 4) && !found_sigfigs then round_digits = 1; found_sigfigs = true end
     if (dollar_magnitude >= 5) && !found_sigfigs then round_digits = 0; found_sigfigs = true end
 
     # 3 days in a row
@@ -79,5 +79,7 @@ short_averages.each.with_index(1) do |short, i|
   end
 end
 
-p "\n-- golden crosses --\n#{golden}\n\n"
-p "\n-- death crosses --\n#{death}\n\n"
+puts "\n-- golden crosses --"
+pp golden
+puts "\n-- death crosses --"
+pp death
