@@ -12,31 +12,40 @@ SYMBOL = ARGV[0] || 'aapl'
 # ichimoku study involves 9 period tenkan and 26 period kijou rolling averages
 long_averages = []
 long_dates = []
-Ticker.find_by(symbol: SYMBOL).ichimoku_price.order(:date).each { |long|
+Ticker.find_by(symbol: SYMBOL).ichimoku_price.order(:date).each do |long|
   unless long.tenkan.blank? || long.kijun.blank? then
     long_averages << long.tenkan
     long_dates << long.date
   end
-}
+end
+
 short_averages = []
 short_dates = []
-Ticker.find_by(symbol: SYMBOL).ichimoku_price.order(:date).each { |short|
+Ticker.find_by(symbol: SYMBOL).ichimoku_price.order(:date).each do |short|
   unless short.kijun.blank? || short.tenkan.blank? then
     short_averages << short.kijun
     short_dates << short.date
   end
-}
+end
 
 golden = []
 death = []
+all_points = []
 skip_next = false
 
 # compare 3 days at a time for intersection
 short_averages.each.with_index(1) do |short, i|
 
-  # only count first day of 2 consecutive crossover triggers (it's either this or the next day)
+  all_points << {
+                 'date' => short_dates[i],
+                 'index' => i,
+                 'short_avg_price' => short_averages[i],
+                 'long_avg_price' => long_averages[i]
+               }
+
+  # only count first day of 2 consecutive crossover triggers (it's either this or the next day, and it's
+  # never quite exact since we're using a discrete set of data)
   if skip_next then
-    # puts "SKIPPING #{i}"
     skip_next = false
     next
   end
@@ -61,16 +70,24 @@ short_averages.each.with_index(1) do |short, i|
 
     # death cross when fast moves under the slow average
     if (delta_prev > 0.0) && (delta_next < 0.0) then
-      # puts "golden cross up (#{short_dates.size - i} days ago): #{short_dates[i]} => prev: #{delta_prev} today: #{delta_middle} tomorrow: #{delta_next}"
-      death << short_dates[i]
+      death << {
+                 'date' => short_dates[i],
+                 'index' => i,
+                 'short_avg_price' => short_averages[i],
+                 'long_avg_price' => long_averages[i]
+               }
       skip_next = true
       next
     end
 
     # golden cross when the quick average moves up through and above the longer average
     if (delta_prev < 0.0) && (delta_next > 0.0) then
-      # puts "death cross down (#{short_dates.size - i} days ago): #{short_dates[i]} => prev: #{delta_prev} today: #{delta_middle} tomorrow: #{delta_next}"
-      golden << short_dates[i]
+      golden << {
+                 'date' => short_dates[i],
+                 'index' => i,
+                 'short_avg_price' => short_averages[i],
+                 'long_avg_price' => long_averages[i]
+                }
       skip_next = true
       next
     end
@@ -79,7 +96,7 @@ short_averages.each.with_index(1) do |short, i|
   end
 end
 
-puts "\n-- golden crosses --"
+puts "\n---- golden crosses #{golden.size} ----"
 pp golden
-puts "\n-- death crosses --"
+puts "\n\n---- death crosses #{death.size} ----"
 pp death
